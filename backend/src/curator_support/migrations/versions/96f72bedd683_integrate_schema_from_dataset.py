@@ -9,6 +9,8 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
+from sqlalchemy.dialects.postgresql import TSVECTOR
+
 
 # revision identifiers, used by Alembic.
 revision: str = '96f72bedd683'
@@ -22,8 +24,10 @@ def upgrade() -> None:
     op.create_table('answers',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('answer', sa.String(), nullable=False),
+    sa.Column('embedding', sa.ARRAY(sa.FLOAT(32)), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
+
     op.create_table('question_answer',
     sa.Column('question', sa.String(), nullable=False),
     sa.Column('category', sa.String(), nullable=False),

@@ -41,10 +41,7 @@ async def main() -> None:
     session_factory = create_session_maker(engine)
 
     db_repo = DbRepository(session_factory)
-
-    model_facade = BertModel()
-    answers = await db_repo.get_all_answers()
-    model_facade.generate_embeddings(answers)
+    model_facade = BertModel(cfg.db.uri)
 
     helper_service = HelperService(db_repo, model_facade)
 

@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import func, ForeignKey
 
 from sqlalchemy.orm import mapped_column, Mapped
-from sqlalchemy.dialects.postgresql import BIGINT
+from sqlalchemy.dialects.postgresql import BIGINT, ARRAY, FLOAT
 
 from enum import StrEnum
 
@@ -25,12 +25,12 @@ class User(Base):  # type: ignore[misc]
     created_at: Mapped[datetime] = mapped_column(default=func.now())
 
 
-
 class Answer(Base):
     __tablename__ = "answers"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     answer: Mapped[str] = mapped_column()
+    embedding: Mapped[list[float]] = mapped_column(type_=ARRAY(FLOAT, dimensions=1))
 
 
 class QuestionAnswer(Base):
@@ -39,4 +39,3 @@ class QuestionAnswer(Base):
     question: Mapped[str] = mapped_column(primary_key=True)
     category: Mapped[str] = mapped_column()
     answer_class: Mapped[int] = mapped_column(ForeignKey("answers.id"))
-

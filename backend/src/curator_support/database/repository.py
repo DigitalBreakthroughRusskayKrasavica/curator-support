@@ -36,12 +36,6 @@ class DbRepository:
             res = await session.scalars(stmt)
         return res.all()
 
-    async def get_all_answers(self):
-        async with self._session_factory() as session:
-            stmt = select(Answer.answer)
-            res = await session.scalars(stmt)
-        return res.all()
-
     async def get_all_curators(self):
         async with self._session_factory() as session:
             stmt = select(User.telegram_id).where(User.role == Role.CURATOR)
