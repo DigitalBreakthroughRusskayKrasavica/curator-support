@@ -5,10 +5,14 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from aiogram.filters import Filter
 
 from curator_support.presentation.bot.states import Conversation
 from curator_support.presentation.bot.filters import CuratorFilter
 
+from redis.asyncio import Redis
+
+from curator_support.services import HelperService
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +24,19 @@ CANCEL_KEYBOARD = ReplyKeyboardMarkup(
 )
 
 
+class IsActiveCurator(Filter):
+    async def __call__(self, message: types.Message, redis_connection: Redis) -> bool:
+        student_id = await redis_connection.get(message.from_user.id)
+        return bool(student_id)
+
+
 @router.callback_query(F.data.startswith("start_conversation"))
 async def start_conversation(
-    callback: types.CallbackQuery, state: FSMContext, bot: Bot
+        callback: types.CallbackQuery,
+        state: FSMContext,
+        bot: Bot,
+        service: HelperService,
+        redis_connection: Redis
 ) -> None:
     if not callback.data:
         logger.info("No callback data")
@@ -30,51 +44,63 @@ async def start_conversation(
 
     student_id = int(callback.data.split("-")[1])
 
+    curator_id = await service.find_unassigned_curator(redis_connection)
+    if curator_id == 0:
+        return await callback.message.answer("Нет свободных кураторов")
+
+    await redis_connection.set(curator_id, student_id)
+
     await state.set_state(Conversation.active)
     await state.storage.set_state(
         key=StorageKey(bot_id=bot.id, chat_id=student_id, user_id=student_id),
         state=Conversation.active,
     )
-    await state.update_data(student_id=student_id, first_message=True)
+
+    await state.update_data(curator_id=curator_id, first_message=True)
 
     if not callback.message:
         logger.info("No message")
         return
 
     await bot.edit_message_reply_markup(
-        chat_id=ADMIN_ID, message_id=callback.message.message_id, reply_markup=None
+        chat_id=student_id, message_id=callback.message.message_id, reply_markup=None
     )
 
     if not isinstance(callback.message, types.Message):
         logger.info("Message has incorrect type")
         return
 
+    await bot.send_message(curator_id, text=f'Студент {student_id} спрашивает:')
+    await bot.copy_message(
+        from_chat_id=student_id,
+        message_id=callback.message.message_id - 1,
+        chat_id=curator_id,
+    )
+
     await callback.message.answer(
-        f"Диалог со студентом {student_id} начат", reply_markup=CANCEL_KEYBOARD
+        f"Диалог с куратором начат", reply_markup=CANCEL_KEYBOARD
     )
 
 
-@router.message(StateFilter(Conversation.active), CuratorFilter())
-async def handle_admin_chat(
-    message: types.Message, state: FSMContext, bot: Bot
+@router.message(CuratorFilter(), IsActiveCurator())
+async def handle_curator_chat(
+        message: types.Message, state: FSMContext, bot: Bot, redis_connection: Redis
 ) -> None:
-    data = await state.get_data()
-    student_id = data["student_id"]
-
-    if data["first_message"]:
-        await state.update_data(first_message=False)
-        await bot.send_message(
-            chat_id=student_id, text="Администратор начал с вами диалог"
-        )
+    student_id = int(await redis_connection.get(message.chat.id))
 
     if message.text == CANCEL_KEYWORDS:
-        await state.clear()
+        await redis_connection.delete(message.chat.id)
+        await state.storage.set_state(
+            key=StorageKey(bot_id=message.bot.id, chat_id=student_id, user_id=student_id, thread_id=None,
+                           business_connection_id=None, destiny='default')
+        )
+
         await message.answer(
             "Диалог завершен", reply_markup=types.ReplyKeyboardRemove()
         )
         await bot.send_message(
             chat_id=student_id,
-            text="Админ завершил диалог",
+            text="Куратор завершил диалог",
             reply_markup=types.ReplyKeyboardRemove(),
         )
         return
@@ -90,25 +116,30 @@ async def handle_admin_chat(
 
 @router.message(StateFilter(Conversation.active))
 async def handle_student_chat(
-    message: types.Message, state: FSMContext, bot: Bot
+        message: types.Message, state: FSMContext, bot: Bot, redis_connection: Redis
 ) -> None:
     student_id = message.chat.id
 
+    data = await state.get_data()
+    curator_id = data['curator_id']
+
     if message.text == CANCEL_KEYWORDS:
+        await redis_connection.delete(curator_id)
         await state.clear()
+
         await message.answer(
             "Диалог завершен", reply_markup=types.ReplyKeyboardRemove()
         )
         await bot.send_message(
-            chat_id=student_id,
-            text=f"Пользователь {student_id} завершил диалог",
+            chat_id=curator_id,
+            text=f"Студент {student_id} завершил диалог",
             reply_markup=types.ReplyKeyboardRemove(),
         )
         return
 
     await bot.copy_message(
         from_chat_id=message.chat.id,
-        chat_id=ADMIN_ID,
+        chat_id=curator_id,
         message_id=message.message_id,
         reply_markup=CANCEL_KEYBOARD,
     )

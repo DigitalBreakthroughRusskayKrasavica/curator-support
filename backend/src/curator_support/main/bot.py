@@ -17,7 +17,9 @@ from curator_support.get_answer import BertModel
 
 from curator_support.presentation.bot.router import router
 from curator_support.presentation.bot.handlers.curators import router as curator_router
+from curator_support.presentation.bot.handlers.conversation import router as conversation_router
 
+from redis.asyncio import Redis
 
 DEFAULT_CONFIG_PATH = ".configs/app.toml"
 LOGGING_FORMAT = "%(asctime)s %(name)s %(levelname)s: %(message)s"
@@ -32,25 +34,28 @@ async def main() -> None:
 
     dp = Dispatcher(storage=storage)
     dp.include_router(curator_router)
+    dp.include_router(conversation_router)
     dp.include_router(router)
 
     engine = create_engine(cfg.db.uri)
     session_factory = create_session_maker(engine)
 
     db_repo = DbRepository(session_factory)
-    
+
     model_facade = BertModel()
     answers = await db_repo.get_all_answers()
     model_facade.generate_embeddings(answers)
 
     helper_service = HelperService(db_repo, model_facade)
 
+    redis_connection = Redis.from_url(cfg.redis.dsn)
+
     dp.message.outer_middleware(AuthMiddleware(repo=db_repo, curator_secret_key=cfg.curator_auth_key))
     dp.update.outer_middleware(DIMiddleware(
-        service=helper_service, 
+        service=helper_service,
         repo=db_repo,
+        redis_connection=redis_connection,
     ))
-
 
     bot = Bot(token=cfg.token)
     await dp.start_polling(bot)

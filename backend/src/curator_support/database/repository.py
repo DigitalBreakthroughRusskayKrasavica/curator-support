@@ -35,18 +35,15 @@ class DbRepository:
             stmt = select(QuestionAnswer.category)
             res = await session.scalars(stmt)
         return res.all()
-        
-
-    # async def get_answers_by_category(self, category: str):
-    #     async with self._session_factory() as session:
-    #         res = await session.scalars(text(
-    #             "SELECT answer FROM question_answer JOIN answers ON question_answer.answer_class = answers.id WHERE category=:c",
-    #         ), {'c': category})
-        
-    #     return res.all()
 
     async def get_all_answers(self):
         async with self._session_factory() as session:
             stmt = select(Answer.answer)
+            res = await session.scalars(stmt)
+        return res.all()
+
+    async def get_all_curators(self):
+        async with self._session_factory() as session:
+            stmt = select(User.telegram_id).where(User.role == Role.CURATOR)
             res = await session.scalars(stmt)
         return res.all()

@@ -58,8 +58,8 @@ services:
     container_name: "redis"
     restart: "unless-stopped"
     volumes:
-        - "/hotel-bot/redis/config:/usr/local/etc/redis"
-        - "/hotel-bot/redis/data:/data"
+      - "/hotel-bot/redis/config:/usr/local/etc/redis"
+      - "/hotel-bot/redis/data:/data"
     ports:
-      "6379:6379"
-    command: "redis-server /usr/local/etc/redis/redis.conf"
+      - "6379:6379"
+    command: "redis-server"
