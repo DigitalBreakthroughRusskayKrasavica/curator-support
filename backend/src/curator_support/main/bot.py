@@ -10,9 +10,9 @@ from curator_support.presentation.bot.config import load_bot_config
 from curator_support.presentation.bot.middlewares import DIMiddleware
 from curator_support.presentation.bot.middlewares.auth import AuthMiddleware
 
-
 from curator_support.database.repository import DbRepository
 from curator_support.database.sa_utils import create_engine, create_session_maker
+from curator_support.get_answer import BertModel
 
 from curator_support.presentation.bot.router import router
 from curator_support.presentation.bot.handlers.curators import router as curator_router
@@ -37,10 +37,18 @@ async def main() -> None:
     session_factory = create_session_maker(engine)
 
     db_repo = DbRepository(session_factory)
-    helper_service = HelperService(db_repo)
+    
+    model_facade = BertModel()
+    answers = await db_repo.get_all_answers()
+    model_facade.generate_embeddings(answers)
 
-    dp.message.outer_middleware(AuthMiddleware(repo=db_repo, curator_secret_key=cfg.token))
-    dp.update.outer_middleware(DIMiddleware(service=helper_service, repo=db_repo))
+    helper_service = HelperService(db_repo, model_facade)
+
+    dp.message.outer_middleware(AuthMiddleware(repo=db_repo, curator_secret_key=cfg.curator_auth_key))
+    dp.update.outer_middleware(DIMiddleware(
+        service=helper_service, 
+        repo=db_repo,
+    ))
 
 
     bot = Bot(token=cfg.token)

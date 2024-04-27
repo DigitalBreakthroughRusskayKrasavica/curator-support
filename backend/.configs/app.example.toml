@@ -20,3 +20,4 @@ port = 5432
 
 [bot]
 token = '12345'
+curator_auth_key = 'secret'

@@ -17,9 +17,8 @@ router = Router(name=__name__)
 async def get_question(msg: types.Message, bot: Bot, service: HelperService):
     question = msg.text
     
-    loop = asyncio.get_event_loop()
     try:
-        ans = await loop.run_in_executor(None, service.get_answer, question)
+        ans = await service.get_answer(question)
         await msg.answer(f"Ответ: {ans}")
     except exceptions.InvalidQuestion as e:
         pass

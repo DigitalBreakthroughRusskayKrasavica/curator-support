@@ -8,6 +8,7 @@ from curator_support.config import DbConfig
 @dataclass(frozen=True)
 class BotConfig:
     token: str
+    curator_auth_key: str
     db: DbConfig
 
 

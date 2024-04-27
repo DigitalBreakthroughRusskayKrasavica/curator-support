@@ -1,9 +1,9 @@
 import logging
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from curator_support.models import User, Role
+from curator_support.models import User, Role, QuestionAnswer, Answer
 
 logger = logging.getLogger(__name__)
 
@@ -29,3 +29,24 @@ class DbRepository:
         async with self._session_factory() as session:
             user = await session.get_one(User, user_id)
         return user
+
+    async def get_categories(self):
+        async with self._session_factory() as session:
+            stmt = select(QuestionAnswer.category)
+            res = await session.scalars(stmt)
+        return res.all()
+        
+
+    # async def get_answers_by_category(self, category: str):
+    #     async with self._session_factory() as session:
+    #         res = await session.scalars(text(
+    #             "SELECT answer FROM question_answer JOIN answers ON question_answer.answer_class = answers.id WHERE category=:c",
+    #         ), {'c': category})
+        
+    #     return res.all()
+
+    async def get_all_answers(self):
+        async with self._session_factory() as session:
+            stmt = select(Answer.answer)
+            res = await session.scalars(stmt)
+        return res.all()
