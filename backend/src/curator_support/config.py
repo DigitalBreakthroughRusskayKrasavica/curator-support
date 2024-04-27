@@ -53,6 +53,15 @@ class DbConfig:
         )
 
 
+@dataclass
+class RedisConfig:
+    host: str
+    port: str
+
+    def __post_init__(self):
+        self.dsn = f"redis://{self.host}:{self.port}/0"
+
+
 def load_db_config(config_path: str) -> DbConfig:
     with open(config_path, "r") as config_file:
         data = toml.load(config_file)

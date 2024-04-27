@@ -6,8 +6,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
-from bot.consts import ADMIN_ID
-from bot.states.conversation import Conversation
+from curator_support.presentation.bot.states import Conversation
+from curator_support.presentation.bot.filters import CuratorFilter
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ async def start_conversation(
         key=StorageKey(bot_id=bot.id, chat_id=student_id, user_id=student_id),
         state=Conversation.active,
     )
-    await state.update_data(guest_id=student_id, first_message=True)
+    await state.update_data(student_id=student_id, first_message=True)
 
     if not callback.message:
         logger.info("No message")
@@ -53,17 +54,17 @@ async def start_conversation(
     )
 
 
-@router.message(StateFilter(Conversation.active), F.chat.id == ADMIN_ID)
+@router.message(StateFilter(Conversation.active), CuratorFilter())
 async def handle_admin_chat(
     message: types.Message, state: FSMContext, bot: Bot
 ) -> None:
     data = await state.get_data()
-    guest_id = data["guest_id"]
+    student_id = data["student_id"]
 
     if data["first_message"]:
         await state.update_data(first_message=False)
         await bot.send_message(
-            chat_id=guest_id, text="Администратор начал с вами диалог"
+            chat_id=student_id, text="Администратор начал с вами диалог"
         )
 
     if message.text == CANCEL_KEYWORDS:
@@ -72,7 +73,7 @@ async def handle_admin_chat(
             "Диалог завершен", reply_markup=types.ReplyKeyboardRemove()
         )
         await bot.send_message(
-            chat_id=guest_id,
+            chat_id=student_id,
             text="Админ завершил диалог",
             reply_markup=types.ReplyKeyboardRemove(),
         )
@@ -80,7 +81,7 @@ async def handle_admin_chat(
 
     await bot.copy_message(
         from_chat_id=message.chat.id,
-        chat_id=guest_id,
+        chat_id=student_id,
         message_id=message.message_id,
         reply_markup=CANCEL_KEYBOARD,
     )
@@ -88,10 +89,10 @@ async def handle_admin_chat(
 
 
 @router.message(StateFilter(Conversation.active))
-async def handle_guest_chat(
+async def handle_student_chat(
     message: types.Message, state: FSMContext, bot: Bot
 ) -> None:
-    guest_id = message.chat.id
+    student_id = message.chat.id
 
     if message.text == CANCEL_KEYWORDS:
         await state.clear()
@@ -99,8 +100,8 @@ async def handle_guest_chat(
             "Диалог завершен", reply_markup=types.ReplyKeyboardRemove()
         )
         await bot.send_message(
-            chat_id=guest_id,
-            text=f"Пользователь {guest_id} завершил диалог",
+            chat_id=student_id,
+            text=f"Пользователь {student_id} завершил диалог",
             reply_markup=types.ReplyKeyboardRemove(),
         )
         return

@@ -3,6 +3,7 @@ import logging
 import os
 
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
 
 from curator_support.services import HelperService
 
@@ -26,10 +27,10 @@ async def main() -> None:
     logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT)
     cfg = load_bot_config(os.getenv("CURATOR_SUPPORT_CONFIG_PATH") or DEFAULT_CONFIG_PATH)
 
-    # storage = RedisStorage.from_url(cfg.redis.dsn)
-    # storage.key_builder = DefaultKeyBuilder(with_destiny=True)
+    storage = RedisStorage.from_url(cfg.redis.dsn)
+    storage.key_builder = DefaultKeyBuilder(with_destiny=True)
 
-    dp = Dispatcher()
+    dp = Dispatcher(storage=storage)
     dp.include_router(curator_router)
     dp.include_router(router)
 

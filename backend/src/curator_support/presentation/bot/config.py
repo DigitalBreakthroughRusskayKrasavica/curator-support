@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import toml
 
-from curator_support.config import DbConfig
+from curator_support.config import DbConfig, RedisConfig
 
 
 @dataclass(frozen=True)
@@ -10,6 +10,7 @@ class BotConfig:
     token: str
     curator_auth_key: str
     db: DbConfig
+    redis: RedisConfig
 
 
 def load_bot_config(config_path: str) -> BotConfig:
@@ -23,4 +24,5 @@ def load_bot_config(config_path: str) -> BotConfig:
     return BotConfig(
         **data["bot"],
         db=DbConfig(**data["db"]),
+        redis=RedisConfig(**data["redis"])
     )
