@@ -28,6 +28,7 @@ dependencies = [
     "toml==0.10.2",
     "redis==5.0.4",
     "psycopg2==2.9.9",
+    "rasa==3.6.20",
 ]
 
 [project.optional-dependencies]
