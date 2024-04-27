@@ -41,3 +41,9 @@ class DbRepository:
             stmt = select(User.telegram_id).where(User.role == Role.CURATOR)
             res = await session.scalars(stmt)
         return res.all()
+
+    async def get_answer_by_class(self, class_: int):
+        async with self._session_factory() as session:
+            stmt = select(Answer.answer).where(Answer.id == class_)
+            res = await session.scalar(stmt)
+        return res

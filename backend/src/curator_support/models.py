@@ -30,7 +30,6 @@ class Answer(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     answer: Mapped[str] = mapped_column()
-    embedding: Mapped[list[float]] = mapped_column(type_=ARRAY(FLOAT, dimensions=1))
 
 
 class QuestionAnswer(Base):
@@ -38,4 +37,5 @@ class QuestionAnswer(Base):
 
     question: Mapped[str] = mapped_column(primary_key=True)
     category: Mapped[str] = mapped_column()
+    embedding: Mapped[list[float]] = mapped_column(type_=ARRAY(FLOAT, dimensions=1))
     answer_class: Mapped[int] = mapped_column(ForeignKey("answers.id"))

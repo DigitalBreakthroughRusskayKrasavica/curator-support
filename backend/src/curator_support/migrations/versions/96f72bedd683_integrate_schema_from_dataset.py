@@ -24,13 +24,13 @@ def upgrade() -> None:
     op.create_table('answers',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('answer', sa.String(), nullable=False),
-    sa.Column('embedding', sa.ARRAY(sa.FLOAT(32)), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
 
     op.create_table('question_answer',
     sa.Column('question', sa.String(), nullable=False),
     sa.Column('category', sa.String(), nullable=False),
+    sa.Column('embedding', sa.ARRAY(sa.FLOAT(32)), nullable=False),
     sa.Column('answer_class', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['answer_class'], ['answers.id'], ),
     sa.PrimaryKeyConstraint('question')

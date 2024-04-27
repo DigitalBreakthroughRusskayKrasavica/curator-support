@@ -32,10 +32,13 @@ class AuthMiddleware(BaseMiddleware):
         chat_id = msg.chat.id
         bot = msg.bot
 
+        user_exists = await self._repo.user_exists(chat_id)
+
         if not self._msg_is_command_start(msg):
+            if not user_exists:
+                await self._repo.add_user(chat_id, Role.STUDENT)
             return await handler(msg, data)
 
-        user_exists = await self._repo.user_exists(chat_id)
         if not user_exists:
             commands, role = [], Role.STUDENT
 

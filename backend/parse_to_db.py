@@ -1,10 +1,6 @@
-import datetime
-from datetime import date, timedelta
-import random
-import uuid
 import csv
 
-from sqlalchemy import text, Engine, create_engine, select
+from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import IntegrityError
 
@@ -38,12 +34,10 @@ with open(
     reader = csv.DictReader(f)
     with session_factory() as session:
         for row in reader:
-            emb = model_facade.generate_embeddings([row['Answer']])
             session.add(
                 Answer(
                     id=row['answer_class'],
                     answer=row['Answer'],
-                    embedding=emb
                 )
             )
         try:
@@ -57,10 +51,12 @@ with open(
     reader = csv.DictReader(f)
     with session_factory() as session:
         for row in reader:
+            emb = model_facade.generate_embeddings([row['Question']])
             session.add(
                 QuestionAnswer(
                     question=row['Question'],
                     category=row['Category'],
+                    embedding=emb,
                     answer_class=int(row['answer_class']),
                 ),
             )

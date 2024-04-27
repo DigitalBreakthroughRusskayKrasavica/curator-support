@@ -52,6 +52,7 @@ async def main() -> None:
         service=helper_service,
         repo=db_repo,
         redis_connection=redis_connection,
+        model_facade=model_facade,
     ))
 
     bot = Bot(token=cfg.token)

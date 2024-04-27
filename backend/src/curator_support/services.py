@@ -17,8 +17,10 @@ class HelperService:
     
     async def get_answer(self, question: str) -> str:
         loop = asyncio.get_event_loop()
-        answer = await loop.run_in_executor(None, self.model_facade.find_best, question)
+        answer_class = await loop.run_in_executor(None, self.model_facade.find_best, question)
 
+        answer = await self.db_repo.get_answer_by_class(answer_class)
+        print(answer)
         return answer
 
     async def find_unassigned_curator(self, redis_connection: Redis) -> int:
