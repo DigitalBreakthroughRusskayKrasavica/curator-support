@@ -15,6 +15,6 @@ class DIMiddleware(BaseMiddleware):
             event: TelegramObject,
             data: Dict[str, Any],
     ) -> Any:
-        for k, v in self._on_inject:
+        for k, v in self._on_inject.items():
             data[k] = v
         return await handler(event, data)

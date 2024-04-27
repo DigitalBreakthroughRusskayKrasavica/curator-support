@@ -4,8 +4,19 @@ import os
 
 from aiogram import Bot, Dispatcher
 
+from curator_support.services import HelperService
+
 from curator_support.presentation.bot.config import load_bot_config
 from curator_support.presentation.bot.middlewares import DIMiddleware
+from curator_support.presentation.bot.middlewares.auth import AuthMiddleware
+
+
+from curator_support.database.repository import DbRepository
+from curator_support.database.sa_utils import create_engine, create_session_maker
+
+from curator_support.presentation.bot.router import router
+from curator_support.presentation.bot.handlers.curators import router as curator_router
+
 
 DEFAULT_CONFIG_PATH = ".configs/app.toml"
 LOGGING_FORMAT = "%(asctime)s %(name)s %(levelname)s: %(message)s"
@@ -18,13 +29,19 @@ async def main() -> None:
     # storage = RedisStorage.from_url(cfg.redis.dsn)
     # storage.key_builder = DefaultKeyBuilder(with_destiny=True)
 
-    # dp = Dispatcher(storage=storage)
     dp = Dispatcher()
+    dp.include_router(curator_router)
+    dp.include_router(router)
 
-    # engine = create_async_engine(cfg.db.uri, future=True, echo=True)
-    # session_factory = async_sessionmaker(engine, expire_on_commit=False)
+    engine = create_engine(cfg.db.uri)
+    session_factory = create_session_maker(engine)
 
-    dp.update.middleware(DIMiddleware())
+    db_repo = DbRepository(session_factory)
+    helper_service = HelperService(db_repo)
+
+    dp.message.outer_middleware(AuthMiddleware(repo=db_repo, curator_secret_key=cfg.token))
+    dp.update.outer_middleware(DIMiddleware(service=helper_service, repo=db_repo))
+
 
     bot = Bot(token=cfg.token)
     await dp.start_polling(bot)

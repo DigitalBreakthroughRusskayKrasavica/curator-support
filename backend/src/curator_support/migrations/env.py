@@ -9,6 +9,10 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from curator_support.config import load_db_config
+from curator_support.database.base import Base
+
+from curator_support.models import User
+
 
 DEFAULT_CONFIG_PATH = ".configs/app.toml"
 
@@ -26,7 +30,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
 config.set_main_option("sqlalchemy.url", cfg.uri)
 
 # other values from the config, defined by the needs of env.py,

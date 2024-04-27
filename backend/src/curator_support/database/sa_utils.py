@@ -19,7 +19,7 @@ async def create_session(
 
 def create_engine(db_uri: str) -> AsyncEngine:
     engine_options = {
-        "echo": True,
+        "echo": False,
         "connect_args": {
             "timeout": 5,
         },
