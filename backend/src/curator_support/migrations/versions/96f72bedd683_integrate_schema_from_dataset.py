@@ -1,7 +1,6 @@
 """integrate schema from dataset
 
 Revision ID: 96f72bedd683
-Revises: 1c3c11a41e5e
 Create Date: 2024-04-27 15:24:57.724173
 
 """
@@ -13,7 +12,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '96f72bedd683'
-down_revision: Union[str, None] = '1c3c11a41e5e'
+down_revision: Union[str, None] = '018fdd3b3a8e'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
