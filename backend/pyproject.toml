@@ -23,7 +23,11 @@ dependencies = [
     "pydantic[email]==2.5.2",
     "fastapi-users==12.1.2",
     "fastapi-users-db-sqlalchemy==6.0.1",
+    "pandas==2.2.2",
+    "sentence-transformers==2.7.0",
     "toml==0.10.2",
+    "redis==5.0.4",
+    "psycopg2==2.9.9",
 ]
 
 [project.optional-dependencies]
