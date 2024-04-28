@@ -1,6 +1,6 @@
 import csv
 
-from sqlalchemy import Engine, create_engine
+from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import IntegrityError
 
@@ -29,7 +29,7 @@ session_factory = create_session_maker(engine)
 model_facade = BertModel(DB_URI)
 
 with open(
-        "C:\\Users\\New\\Downloads\Telegram Desktop\\train_dataset_train_SecondPilot\\train_SecondPilot\\answer_class.csv",
+        "./src/curator_support/models/rasa/answer_class.csv",
         'r', encoding='utf-8') as f:
     reader = csv.DictReader(f)
     with session_factory() as session:
@@ -46,7 +46,7 @@ with open(
             print(e)
 
 with open(
-        "C:\\Users\\New\\Downloads\Telegram Desktop\\train_dataset_train_SecondPilot\\train_SecondPilot\\train_data.csv",
+        "./src/curator_support/models/rasa/train_data.csv",
         'r', encoding='utf-8') as f:
     reader = csv.DictReader(f)
     with session_factory() as session:
