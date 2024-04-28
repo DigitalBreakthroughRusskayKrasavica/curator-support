@@ -1,5 +1,36 @@
 # Curator-support
 
+## 🛠 Установка
+
+1. Склонируйте проект и войдите в него
+   ```
+   git clone [https://github.com/akiko23/greenatom-test](https://github.com/DigitalBreakthroughRusskayKrasavica3-0/curator-suppor
+   cd curator-suppor/backend
+   ```
+
+2. Создайте и активируйте виртуальное окружение
+    ```
+    python -m venv venv
+    source venv/bin/activate
+    ```
+
+3. Установите зависимости в интерактивном режиме
+   ```
+   pip install -e .
+   pip install rasa --ignore-requires-python
+   pip install SQLAlchemy==2.0.23
+   ```
+
+4. Инициалиируйте API фреймворка RASA (в другом процессе с активированным venv)
+   ```
+   cd src/curator_support/lms/rasa && python start.py && python -m rasa run -p 6060 -i 127.0.0.1 --enable-api -m ./models/model.tar.gz
+   ```
+   
+5. Запустите бота (в первом процессе)
+   ```
+   python -m curator_support.main.bot
+   ```
+
 ## 🧰 Tech Stack
 
 
