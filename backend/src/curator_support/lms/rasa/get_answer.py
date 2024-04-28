@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 import os
 
 
-url = f'http://{os.getenv("RASA_HOST")}:6060/model/parse'
+url = f'http://{os.getenv("RASA_HOST", "localhost")}:6060/model/parse'
 confidence_limit = 0.3  # уверенность, ниже которой скипаем вопрос
 
 
