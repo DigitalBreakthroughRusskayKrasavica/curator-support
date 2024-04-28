@@ -7,8 +7,10 @@ from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import IntegrityError
 
+import os
 
-url = 'http://127.0.0.1:6060/model/parse'
+
+url = f'http://{os.getenv("RASA_HOST")}:6060/model/parse'
 confidence_limit = 0.3  # уверенность, ниже которой скипаем вопрос
 
 
