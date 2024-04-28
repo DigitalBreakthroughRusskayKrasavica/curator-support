@@ -6,8 +6,8 @@
 
    1. Склонируйте проект и войдите в него
       ```
-      git clone [https://github.com/akiko23/greenatom-test](https://github.com/DigitalBreakthroughRusskayKrasavica3-0/curator-suppor
-      cd curator-suppor/backend
+      git clone https://github.com/DigitalBreakthroughRusskayKrasavica3-0/curator-support
+      cd curator-support/backend
       ```
    
    2. Создайте и активируйте виртуальное окружение
@@ -21,6 +21,8 @@
       pip install -e .
       pip install rasa --ignore-requires-python
       pip install SQLAlchemy==2.0.23
+      pip install -U aiogram
+      pip install openpyxl dask
       ```
    
    4. Инициалиируйте API фреймворка RASA (в другом процессе с активированным venv)
