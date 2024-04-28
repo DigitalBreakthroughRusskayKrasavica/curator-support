@@ -21,7 +21,6 @@
       pip install -e .
       pip install rasa --ignore-requires-python
       pip install SQLAlchemy==2.0.23
-      pip install -U aiogram
       pip install openpyxl dask
       ```
    
@@ -29,10 +28,14 @@
       ```
       cd src/curator_support/lms/rasa && python start.py && python -m rasa run -p 6060 -i 127.0.0.1 --enable-api -m ./models/model.tar.gz
       ```
+   5. Обновите библиотеку после расы
+      ```
+      pip install -U aiogram
+      ```
+      
+   6. Переименуйте и заполните конфиги (app.example.toml -> app.toml, app.docker.example.toml -> app.docker.toml)
    
-   5. Переименуйте и заполните конфиги (app.example.toml -> app.toml, app.docker.example.toml -> app.docker.toml)
-   
-   6. Запустите бота (в первом процессе)
+   7. Запустите бота (в первом процессе)
       ```
       python -m curator_support.main.bot
       ```
