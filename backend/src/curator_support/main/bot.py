@@ -14,6 +14,7 @@ from curator_support.presentation.bot.middlewares.auth import AuthMiddleware
 from curator_support.database.repository import DbRepository
 from curator_support.database.sa_utils import create_engine, create_session_maker
 from curator_support.get_answer import BertModel
+from curator_support.lms.rasa.get_answer import RasaModel
 
 from curator_support.presentation.bot.router import router
 from curator_support.presentation.bot.handlers.curators import router as curator_router
@@ -41,9 +42,10 @@ async def main() -> None:
     session_factory = create_session_maker(engine)
 
     db_repo = DbRepository(session_factory)
-    model_facade = BertModel(cfg.db.uri)
+    bert_model = BertModel(cfg.db.uri)
+    rasa_model = RasaModel(cfg.db.uri)
 
-    helper_service = HelperService(db_repo, model_facade)
+    helper_service = HelperService(db_repo, bert_model, rasa_model)
 
     redis_connection = Redis.from_url(cfg.redis.dsn)
 
@@ -52,7 +54,6 @@ async def main() -> None:
         service=helper_service,
         repo=db_repo,
         redis_connection=redis_connection,
-        model_facade=model_facade,
     ))
 
     bot = Bot(token=cfg.token)

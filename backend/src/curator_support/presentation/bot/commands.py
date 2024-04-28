@@ -12,4 +12,5 @@ def get_curator_commands() -> List[BotCommand]:
     return [
         *COMMON_COMMANDS,
         BotCommand(command="new_pair", description="Добавить пару вопрос-ответ"),
+        BotCommand(command="set_model", description="Сменить модель"),
     ]

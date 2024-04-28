@@ -60,3 +60,31 @@ async def cancel_appending(callback: types.CallbackQuery, state: FSMContext, bot
     await state.clear()
     await bot.delete_message(chat_id=callback.from_user.id, message_id=callback.message.message_id)
     await bot.send_message(chat_id=callback.from_user.id, text='Вы отменили процесс добавления пары')
+
+
+@router.message(Command('set_model'))
+async def set_other_model(msg: types.Message):
+    with open('current_model', 'r') as f:
+        current_model = f.read().rstrip()
+    await msg.answer(
+        text='Выберите модель, которая будет отвечать на вопросы\n\n'
+             f"Текущая: {current_model}",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(text='Rubert', callback_data='set_model-rubert'),
+                    InlineKeyboardButton(text='Rasa', callback_data='set_model-rasa'),
+                ]
+            ]
+        )
+    )
+
+
+@router.callback_query(F.data.startswith('set_model'))
+async def set_model(callback: types.CallbackQuery, bot: Bot):
+    model = callback.data.split('-')[1]
+    with open('current_model', 'w') as f:
+        f.write(model)
+
+    await bot.delete_message(chat_id=callback.from_user.id, message_id=callback.message.message_id)
+    await bot.send_message(callback.from_user.id, f"Выставлена модель '{model}'")

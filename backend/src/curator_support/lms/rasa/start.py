@@ -44,7 +44,7 @@ rasa.train(
 
 # RASA starting
 # rasa.run(тут какие-то аргументы говна - руки оборвать людям, кто расу писал)
-subprocess.Popen(f'venv/scripts/rasa.exe run -p 6060 -i 127.0.0.1 --enable-api -m ./models/{model_name}')
+# subprocess.Popen(f'/home/akiko/curator-support/backend/venv/bin/rasa run -p 6060 -i 127.0.0.1 --enable-api -m ./models/{model_name}')
 #
 
 # ЗДЕСЬ ДАЛЬШЕ МОЖНО ЗАПУСКАТЬ ЮЗЕР ИНТЕРФЕЙСЫ - пример bot.py

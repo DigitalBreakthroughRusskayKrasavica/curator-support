@@ -11,7 +11,6 @@ from sqlalchemy.orm import sessionmaker
 
 class BertModel:
     def __init__(self, db_uri: str):
-        print(db_uri)
         self.model = SentenceTransformer('cointegrated/rubert-tiny2')
         self.session_factory = sessionmaker(create_engine(db_uri.replace('asyncpg', 'psycopg2')))
 

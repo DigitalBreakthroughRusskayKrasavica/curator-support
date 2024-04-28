@@ -11,6 +11,11 @@ backend/.configs/app.toml
 backend/.configs/db.env
 backend/.configs/app.docker.toml
 
+backend/src/curator_support/lms/rasa/data.xlsx
+backend/src/curator_support/lms/rasa/rasa_data
+backend/src/curator_support/lms/rasa/models
+backend/src/curator_support/lms/rasa/.rasa
+
 # Distribution / packaging
 .Python
 build/
