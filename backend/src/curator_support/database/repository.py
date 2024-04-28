@@ -69,3 +69,10 @@ class DbRepository:
                 )
             )
             await session.commit()
+
+    async def change_role(self, user_id, role):
+        async with self._session_factory() as session:
+            user = await session.get(User, user_id)
+            user.role = role
+            session.add(user)
+            await session.commit()

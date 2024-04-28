@@ -50,3 +50,6 @@ class HelperService:
             if item is None:
                 return curator_id
         return 0
+
+    async def change_role(self, user_id, role):
+        await self.db_repo.change_role(user_id, role)
