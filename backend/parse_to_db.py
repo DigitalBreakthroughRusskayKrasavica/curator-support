@@ -29,7 +29,7 @@ session_factory = create_session_maker(engine)
 model_facade = BertModel(DB_URI)
 
 with open(
-        "./src/curator_support/models/rasa/answer_class.csv",
+        "./src/curator_support/lms/rasa/answer_class.csv",
         'r', encoding='utf-8') as f:
     reader = csv.DictReader(f)
     with session_factory() as session:
@@ -46,7 +46,7 @@ with open(
             print(e)
 
 with open(
-        "./src/curator_support/models/rasa/train_data.csv",
+        "./src/curator_support/lms/rasa/train_data.csv",
         'r', encoding='utf-8') as f:
     reader = csv.DictReader(f)
     with session_factory() as session:

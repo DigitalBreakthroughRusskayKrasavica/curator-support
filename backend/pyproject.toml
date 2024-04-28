@@ -16,6 +16,7 @@ requires-python = ">=3.11"
 dependencies = [
     "aiogram==3.5.0",
     "fastapi==0.104.1",
+    "torch==2.3.0",
     "asyncpg==0.29.0",
     "SQLAlchemy==2.0.23",
     "alembic==1.12.1",
@@ -27,7 +28,7 @@ dependencies = [
     "sentence-transformers==2.7.0",
     "toml==0.10.2",
     "redis==5.0.4",
-    "psycopg2==2.9.9",
+    "psycopg2-binary==2.9.9",
 ]
 
 [project.optional-dependencies]
